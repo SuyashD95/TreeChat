@@ -10,4 +10,10 @@
 
     <!-- Description of the image displayed at the center of {@link WelcomeActivity} -->
     <string name="welcome_image_description">An illustration used to welcome users at the starting screen.</string>
+
+    <!-- Text displayed on the Create Room button in the {@link RoomsCatalogActivity} -->
+    <string name="create_room_btn">Create</string>
+
+    <!-- Text shown as hint for the input field to create a new room -->
+    <string name="create_room_field_hint">Create a new Room</string>
 </resources>
