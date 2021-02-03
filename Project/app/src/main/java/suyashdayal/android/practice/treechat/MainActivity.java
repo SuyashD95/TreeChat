@@ -10,7 +10,7 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     /** Button to let users sign in using their Google's account */
-    TextView mGoogleLoginBtn;
+    private TextView mGoogleLoginBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     @Override
     public void onClick(View v) {
+        // Show a Toast message for testing purposes.
         Toast.makeText(this, "Login with Google", Toast.LENGTH_SHORT).show();
     }
 }
