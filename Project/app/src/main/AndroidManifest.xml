@@ -12,7 +12,7 @@
         <activity
             android:name=".RoomsCatalogActivity"
             android:label="Rooms Catalog" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".WelcomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class WelcomeActivity extends AppCompatActivity implements View.OnClickListener {
 
     /** Button to let users sign in using their Google's account */
     private TextView mGoogleLoginBtn;
