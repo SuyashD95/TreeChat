@@ -1,3 +1,13 @@
 <resources>
+    <!-- Name of the App -->
     <string name="app_name">TreeChat</string>
+
+    <!-- Text for the button to sign in users using Google's authentication -->
+    <string name="login_google">Sign In with Google</string>
+
+    <!-- Text shown at the top of the {@link WelcomeActivity} below the name of the app -->
+    <string name="welcome_text">A simple chat app for demonstration purposes</string>
+
+    <!-- Description of the image displayed at the center of {@link WelcomeActivity} -->
+    <string name="welcome_image_description">An illustration used to welcome users at the starting screen.</string>
 </resources>
