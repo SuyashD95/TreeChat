@@ -2,6 +2,7 @@ package suyashdayal.android.practice.treechat;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -31,5 +32,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         // Show a Toast message for testing purposes.
         Toast.makeText(this, "Login with Google", Toast.LENGTH_SHORT).show();
+
+        Intent moveToRoomsCatalog = new Intent(this, RoomsCatalogActivity.class);
+        startActivity(moveToRoomsCatalog);
     }
 }
