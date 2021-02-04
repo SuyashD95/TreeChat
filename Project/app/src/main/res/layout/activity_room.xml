@@ -13,7 +13,6 @@
         android:layout_margin="16dp"
         android:text="@string/member_section_title"
         android:textStyle="bold"
-        android:textColor="@color/black"
         android:textSize="36sp" />
 
     <ListView
@@ -28,7 +27,6 @@
         android:layout_margin="16dp"
         android:text="@string/message_section_title"
         android:textStyle="bold"
-        android:textColor="@color/black"
         android:textSize="36sp" />
 
     <ListView
