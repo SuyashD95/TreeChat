@@ -17,9 +17,15 @@
     <!-- Text shown as hint for the input field to create a new room -->
     <string name="create_room_field_hint">Create a new Room</string>
 
-    
+    <!-- Title of the Members section on the {@link RoomActivity} -->
     <string name="member_section_title">Members</string>
+
+    <!-- Title of the Message section on the {@link RoomActivity} -->
     <string name="message_section_title">Messages</string>
-    <string name="message_field_hint">Write your message...</string>
+
+    <!-- Text shown as hint for the input field to write a message -->
+    <string name="message_field_hint">Write your message…</string>
+
+    <!-- Text displayed on the Send Message button in the {@link RoomActivity} -->
     <string name="send_msg_btn_text">Send</string>
 </resources>
