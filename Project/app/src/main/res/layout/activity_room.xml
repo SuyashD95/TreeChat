@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".RoomActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="@string/member_section_title"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:textSize="36sp" />
+
+    <ListView
+        android:id="@+id/member_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="@string/message_section_title"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:textSize="36sp" />
+
+    <ListView
+        android:id="@+id/message_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="5" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:layout_marginHorizontal="16dp">
+
+        <EditText
+            android:id="@+id/create_room_field"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_weight="4"
+            android:inputType="textMultiLine"
+            android:autofillHints="The text message"
+            android:layout_marginEnd="8dp"
+            android:hint="@string/message_field_hint"/>
+
+        <Button
+            android:id="@+id/create_room_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:text="@string/send_msg_btn_text"/>
+    </LinearLayout>
+
+</LinearLayout>
