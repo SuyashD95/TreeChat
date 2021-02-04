@@ -50,7 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:layout_weight="4"
-            android:inputType="text"
+            android:inputType="textMultiLine"
             android:autofillHints="The text message"
             android:layout_marginEnd="8dp"
             android:hint="@string/message_field_hint"/>
