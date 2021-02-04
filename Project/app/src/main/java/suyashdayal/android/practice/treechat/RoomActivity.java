@@ -65,10 +65,10 @@ public class RoomActivity extends AppCompatActivity {
         messageList.setAdapter(messageArrayAdapter);
 
         // Field to write a new message
-        final EditText messageEditText = findViewById(R.id.create_room_field);
+        final EditText messageEditText = findViewById(R.id.write_msg_field);
 
         // The button to broadcast the message to the Room
-        Button sendMessageBtn = findViewById(R.id.create_room_button);
+        Button sendMessageBtn = findViewById(R.id.send_msg_btn);
         // Attach a click listener for testing purposes
         sendMessageBtn.setOnClickListener((View v) -> {
             String message = messageEditText.getText().toString();

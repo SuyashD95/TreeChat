@@ -10,7 +10,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TreeChat">
 
-        <activity android:name=".RoomActivity" />
+        <activity android:name=".RoomActivity"
+            android:windowSoftInputMode="adjustResize"/>
 
         <activity
             android:name=".RoomsCatalogActivity"
