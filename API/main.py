@@ -246,5 +246,17 @@ class Message(Resource):
 # -------------
 
 
+# Register Resources to API Endpoints 
+# -----------------------------------
+api.add_resource(UserEntity, '/users/new', endpoint='create_new_user')
+api.add_resource(UserEntity, '/users/all', endpoint='get_all_users')
+api.add_resource(UserRecord, '/users/<string:name>', endpoint='get_user_by_name')
+api.add_resource(RoomEntity, '/rooms/new', endpoint='create_new_room')
+api.add_resource(RoomEntity, '/rooms/all', endpoint='get_all_rooms')
+api.add_resource(RoomRecord, '/rooms/<string:name>', endpoint='get_room_by_name')
+api.add_resource(Message, '/messages/new', endpoint='create_new_message')
+api.add_resource(Message, '/messages/<string:room_name>', endpoint='get_all_msgs_of_a_room')
+# -----------------------------------
+
 if __name__ == '__main__':
     app.run(debug=True)
