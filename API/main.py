@@ -65,44 +65,183 @@ class MessageModel(db.Model):
         return f'Message(body={self.text}, timestamp={self.timestamp}, sender={self.user.name}, room={self.room.name}'
 # ---------------------
 
+
 # API Resources
 # -------------
 class UserEntity(Resource):
+    """Resource class to handle requests made to the 'users' table 
+    in the database at the specified endpoints:
+        1. /users/all
+        2. /users/new
+    
+    Handles the following requests along with a summary:
+        1. GET  - Get all the users.
+        2. POST - Create a new user.
+    """
 
     def get():
+        """Handles GET requests for the resource and return HTTP code 200
+        on a successful completion of a request.
+
+        Return a JSON response back to the user containing details
+        about all the users stored in the database.
+        
+        Abort handling GET requests and return 404 if no users exist
+        in the database along with an error message.
+        """
         pass
 
     def post():
+        """Handles POST requests at the specified endpoint and returns status
+        code 201 representing that a new user has been inserted into the
+        database along with a JSON response containing information about
+        the newly created user.
+
+        Also, if the necesasary data required to insert a new user is not provided,
+        return a 400 error, along with some information about the problem with the given
+        data as an error message.
+        
+        Aborts the request if a member with the passed name already exists
+        and thus, return a 409 error code with an error message.
+        """
         pass
 
 
 class UserRecord(Resource):
+    """Resource class to handle requests made to a specific record
+    of the 'users' table of the database at the specified endpoint(s): 
+        1. /users/{name}
+    
+    Handles the following request(s) along with a summary::
+        1. GET - Get a user by their name.
+    """
 
-    def get():
+    def get(name):
+        """Handles GET requests at the specified endpoint and return
+        HTTP code 200 on a successful completion of a request.
+        
+        The parameter name should be identical to the name of the user that
+        could potentially exist in the database. This means that "Name"
+        and "NaMe" are treated as two different values because their cases
+        are different, even though they mean the same.
+        
+        Return a JSON response containing details about the specified user.
+
+        Abort handling GET requests and return 404 if no user with
+        the specified name is found along with an error message.
+        """
         pass
 
 
 class RoomEntity(Resource):
+    """Resource class to handle requests made to the 'rooms' table 
+    in the database at the specified endpoints:
+        1. /rooms/all
+        2. /rooms/new
+    
+    Handles the following requests along with a summary:
+        1. GET  - Get all the rooms.
+        2. POST - Create a new room.
+    """
 
     def get():
+        """Handles GET requests at the endpoint and return HTTP code 200
+        on a successful completion of a request.
+
+        Return a JSON response back to the user containing details
+        about all the rooms stored in the database.
+        
+        Abort handling GET requests and return 404 if no rooms exist
+        in the database along with an error message.
+        """
         pass
 
     def post():
+        """Handles POST requests at the specified endpoint and returns status
+        code 201 representing that a new room has been inserted into the
+        database along with a JSON response containing information about
+        the newly created room.
+
+        Also, if the necesasary data required to insert a new room is not provided,
+        return a 400 error, along with some information about the problem with the given
+        data as an error message.
+        
+        Aborts the request if a room with the passed name already exists
+        and thus, return a 409 error code with an error message.
+        """
         pass
 
 
 class RoomRecord(Resource):
+    """Resource class to handle requests made to a specific record
+    of the 'rooms' table of the database at the specified endpoint(s): 
+        1. /rooms/{name}
+    
+    Handles the following request(s) along with a summary::
+        1. GET - Get a room by their name.
+    """
 
-    def get():
+    def get(name):
+        """Handles GET requests at the specified endpoint and return
+        HTTP code 200 on a successful completion of a request.
+        
+        The parameter name should be identical to the name of the room that
+        could potentially exist in the database. This means that "Room"
+        and "RooM" are treated as two different values because their cases
+        are different, even though they mean the same.
+        
+        Return a JSON response containing details about the specified room.
+
+        Abort handling GET requests and return 404 if no room with
+        the specified name is found along with an error message.
+        """
         pass
 
 
 class Message(Resource):
+    """Resource class to handle requests made to the 'messages' table 
+    in the database at the specified endpoints:
+        1. /messages/{room_name}
+        2. /messages/new
+    
+    Handles the following requests along with a summary:
+        1. GET  - Get all the messages of a particular room.
+        2. POST - Create a new message.
+    """
 
-    def get():
+    def get(room_name):
+        """Handles GET requests at the endpoint and return HTTP code 200
+        on a successful completion of a request.
+
+        The parameter room_name should be identical to the name of the room that
+        could potentially exist in the database. This means that "Room"
+        and "RooM" are treated as two different values because their cases
+        are different, even though they mean the same.
+        
+        Return a JSON response back to the user containing details
+        about all the messages that were passed between members of the
+        given room.
+        
+        Abort handling GET requests with an 404 error code along with
+        an error message if:\n
+            1. The room specified by room_name parameter doesn't exist, or;\n
+            2. No messages exist for a given room in the database.
+        """
         pass
 
     def post():
+        """Handles POST requests at the specified endpoint and returns status
+        code 201 representing that a new message has been inserted into the
+        database along with a JSON response containing information about
+        the newly created message.
+
+        Also, if the necesasary data required to insert a new nessage is not provided,
+        return a 400 error, along with some information about the problem with the given
+        data as an error message.
+        
+        Aborts the request if a message with no content i.e., empty body is sent
+        to the server and thus, return a 409 error code with an error message.
+        """
         pass  
 # -------------
 
