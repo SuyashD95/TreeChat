@@ -2,7 +2,7 @@ from datetime import datetime
 
 import requests
 
-from main import db as db, User, Room, Message
+from main import db, UserModel as User, RoomModel as Room, MessageModel as Message
 
 LOCAL_DEV_SERVER = 'http://127.0.0.1:5000/'
 
