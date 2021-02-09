@@ -45,5 +45,26 @@ class Room(db.Model):
         return f'Room(name={self.name}, admin={self.user.name})'
 
 
+class Message(db.Model):
+    """Model class defined for the Message table."""
+
+    _id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, nullable=False)
+    sender_id = db.Column(db.Integer,
+        db.ForeignKey('user._id', onupdate='CASCADE', ondelete='CASCADE'),
+        nullable=False    
+    )
+    room_id = db.Column(db.Integer,
+        db.ForeignKey('room._id', onupdate='CASCADE', ondelete='CASCADE'),
+        nullable=False
+    )
+
+    def __repr__(self):
+        """Object representation for a record of a Message."""
+        return f'Message(body={self.text}, timestamp={self.timestamp}, sender={self.user.name}, room={self.room.name}'
+# ---------------------
+
+
 if __name__ == '__main__':
     app.run(debug=True)
