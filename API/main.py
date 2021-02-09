@@ -29,5 +29,21 @@ class User(db.Model):
         return f'User(name={self.name}, email={self.email}, password={self.password})'
 
 
+class Room(db.Model):
+    """Model class defined for the Room table."""
+
+    _id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(128), unique=True, nullable=False)
+    admin_id = db.Column(db.Integer, 
+        db.ForeignKey('user._id', onupdate='CASCADE', ondelete='CASCADE'),
+        nullable=False
+    )
+    messages = db.relationship('Message', backref='room', lazy=True)
+
+    def __repr__(self):
+        """Object representation for a record of a Room."""
+        return f'Room(name={self.name}, admin={self.user.name})'
+
+
 if __name__ == '__main__':
     app.run(debug=True)
