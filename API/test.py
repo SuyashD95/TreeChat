@@ -2,7 +2,7 @@ from datetime import datetime
 
 import requests
 
-from main import db, User, Room, Message
+from main import db as db, User, Room, Message
 
 LOCAL_DEV_SERVER = 'http://127.0.0.1:5000/'
 
@@ -11,6 +11,10 @@ def load_database():
     """Helper method used for pre-populating the test SQLite database
     with some initial data.
     """
+    # Creating the tables in the database based on the Models
+    db.create_all()
+    print('Tables are successfully created in the database.', end='\n\n')
+
     users_data = [
         {
             'name': 'User 1',
@@ -94,5 +98,41 @@ def load_database():
     print('Successfully inserted new records into the message table.')
 
 
-# Pre-pop1ulate data into the database
-# load_database()
+def clean_database():
+    """A helper method to delete all existing data stored in the local
+    database.
+    """
+    print('Deleting all the data stored in the tables in the database...')
+    
+    message_deleted_row_count = db.session.query(Message).delete()
+    if message_deleted_row_count:
+        print('Successfully delete all the the data in the message table.')
+    else:
+        print('Failed to delete all the data in the message table.')
+    
+    room_deleted_row_count = db.session.query(Room).delete()
+    if room_deleted_row_count:
+        print('Successfully delete all the the data in the room table.')
+    else:
+        print('Failed to delete all the data in the room table.')
+
+    user_deleted_row_count = db.session.query(User).delete()
+    if user_deleted_row_count:
+        print('Successfully delete all the the data in the user table.')
+    else:
+        print('Failed to delete all the data in the user table.')
+    
+    db.session.commit()
+    print('Successfully deleted all the data in the database.', end='\n\n')
+
+    # Drop all the tables in the database
+    db.drop_all()
+    print('All the tables have been dropped from the database.')
+
+
+if __name__ == '__main__':
+    # Pre-pop1ulate data into the database
+    load_database()
+
+    # Deleting all existing in the database
+    clean_database()
