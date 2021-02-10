@@ -19,12 +19,14 @@ db = SQLAlchemy(app)
 class UserModel(db.Model):
     """Model class defined for the User table."""
 
+    __tablename__ = 'users'
+
     _id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128), unique=True, nullable=False)
     password = db.Column(db.String(64), nullable=False)
     email = db.Column(db.String(256), nullable=True)
-    is_admin = db.relationship('Room', backref='user', lazy=True)
-    sends = db.relationship('Message', backref='user', lazy=True)
+    is_admin = db.relationship('RoomModel', backref='user', lazy=True)
+    sends = db.relationship('MessageModel', backref='user', lazy=True)
 
     def __repr__(self):
         """Object representation for a record of User."""
@@ -34,13 +36,15 @@ class UserModel(db.Model):
 class RoomModel(db.Model):
     """Model class defined for the Room table."""
 
+    __tablename__ = 'rooms'
+
     _id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128), unique=True, nullable=False)
     admin_id = db.Column(db.Integer, 
-        db.ForeignKey('user._id', onupdate='CASCADE', ondelete='CASCADE'),
+        db.ForeignKey('users._id', onupdate='CASCADE', ondelete='CASCADE'),
         nullable=False
     )
-    messages = db.relationship('Message', backref='room', lazy=True)
+    messages = db.relationship('MessageModel', backref='room', lazy=True)
 
     def __repr__(self):
         """Object representation for a record of a Room."""
@@ -50,15 +54,17 @@ class RoomModel(db.Model):
 class MessageModel(db.Model):
     """Model class defined for the Message table."""
 
+    __meetingrooms__ = 'messages'
+
     _id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.Text, nullable=False)
     timestamp = db.Column(db.DateTime, nullable=False)
     sender_id = db.Column(db.Integer,
-        db.ForeignKey('user._id', onupdate='CASCADE', ondelete='CASCADE'),
+        db.ForeignKey('users._id', onupdate='CASCADE', ondelete='CASCADE'),
         nullable=False    
     )
     room_id = db.Column(db.Integer,
-        db.ForeignKey('room._id', onupdate='CASCADE', ondelete='CASCADE'),
+        db.ForeignKey('rooms._id', onupdate='CASCADE', ondelete='CASCADE'),
         nullable=False
     )
 
@@ -101,7 +107,7 @@ message_post_reqparser.add_argument('timestamp', type=str,
 message_post_reqparser.add_argument('sender_name', type=str, 
     help='Required. Name of the sender.', required=True
 )
-message_post_reqparser.add('room_name', type=str, 
+message_post_reqparser.add_argument('room_name', type=str, 
     help='Required. Name of the room.', required=True
 )
 # ---------------
@@ -150,7 +156,7 @@ class UserEntity(Resource):
         2. POST - Create a new user.
     """
 
-    def get():
+    def get(self):
         """Handles GET requests for the resource and return HTTP code 200
         on a successful completion of a request.
 
@@ -175,7 +181,7 @@ class UserEntity(Resource):
         return [users], 200
 
     @marshal_with(user_fields)
-    def post():
+    def post(self):
         """Handles POST requests at the specified endpoint and returns status
         code 201 representing that a new user has been inserted into the
         database along with a JSON response containing information about
@@ -217,7 +223,7 @@ class UserRecord(Resource):
     """
 
     @marshal_with(user_fields)
-    def get(name):
+    def get(self, name):
         """Handles GET requests at the specified endpoint and return
         HTTP code 200 on a successful completion of a request.
         
@@ -252,7 +258,7 @@ class RoomEntity(Resource):
         2. POST - Create a new room.
     """
 
-    def get():
+    def get(self):
         """Handles GET requests at the endpoint and return HTTP code 200
         on a successful completion of a request.
 
@@ -277,7 +283,7 @@ class RoomEntity(Resource):
         return [rooms], 200
 
     @marshal_with(room_fields)
-    def post():
+    def post(self):
         """Handles POST requests at the specified endpoint and returns status
         code 201 representing that a new room has been inserted into the
         database along with a JSON response containing information about
@@ -320,7 +326,7 @@ class RoomRecord(Resource):
     """
 
     @marshal_with(room_fields)
-    def get(name):
+    def get(self, name):
         """Handles GET requests at the specified endpoint and return
         HTTP code 200 on a successful completion of a request.
         
@@ -355,7 +361,7 @@ class Message(Resource):
         2. POST - Create a new message.
     """
 
-    def get(room_name):
+    def get(self, room_name):
         """Handles GET requests at the endpoint and return HTTP code 200
         on a successful completion of a request.
 
@@ -395,7 +401,7 @@ class Message(Resource):
         return [messages], 200
 
     @marshal_with(message_fields)
-    def post():
+    def post(self):
         """Handles POST requests at the specified endpoint and returns status
         code 201 representing that a new message has been inserted into the
         database along with a JSON response containing information about

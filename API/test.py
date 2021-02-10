@@ -1,4 +1,5 @@
 from datetime import datetime
+from json import dumps as json_dumps
 
 import requests
 
@@ -6,15 +7,14 @@ from main import db, UserModel as User, RoomModel as Room, MessageModel as Messa
 
 LOCAL_DEV_SERVER = 'http://127.0.0.1:5000/'
 
+# A lambda function to format JSON responses in more human-readable manner
+prettify_json = lambda json_response, indent=2: json_dumps(json_response, indent=indent)
+
 
 def load_database():
     """Helper method used for pre-populating the test SQLite database
     with some initial data.
     """
-    # Creating the tables in the database based on the Models
-    db.create_all()
-    print('Tables are successfully created in the database.', end='\n\n')
-
     users_data = [
         {
             'name': 'User 1',
@@ -39,7 +39,7 @@ def load_database():
         db.session.add(new_user)
         db.session.commit()
         print(f'Added {new_user.name} into the database.')
-    print('Successfully inserted new records into the user table.')
+    print('Successfully inserted new records into the user table.', end='\n\n')
 
     room_admin = db.session.query(User).filter_by(name='User 1').first()
     
@@ -54,7 +54,7 @@ def load_database():
         room_admin.is_admin.append(new_room)
         db.session.commit()
         print(f'Added {new_room.name} into the database w/ {new_room.user.name} as its admin.')
-    print('Successfully inserted new records into the room table.')
+    print('Successfully inserted new records into the room table.', end='\n\n')
 
     sender_2 = db.session.query(User).filter_by(name='User 2').first()
     sender_3 = db.session.query(User).filter_by(name='User 3').first()
@@ -95,7 +95,46 @@ def load_database():
         message['sender'].sends.append(new_message)
         db.session.commit()
         print(f'Added new message, "{new_message.body}", sent by {new_message.user.name} on {new_message.room.name}')
-    print('Successfully inserted new records into the message table.')
+    print('Successfully inserted new records into the message table.', end='\n')
+    input('Press any key to continue...\n')
+
+
+def test_get_all_users(base_url, expected_success_code=200, expected_fail_code=404):
+    """An unit test to ensure that the endpoint to get all the existing
+    users is working properly.
+    """
+    ENDPOINT = 'users/all'
+    response = requests.get(f'{base_url}{ENDPOINT}')
+
+    if response.status_code == expected_success_code:
+        print(f'Result: SUCCESS.\nJSON:\n{prettify_json(response.json())}')
+    elif response.status_code == expected_fail_code:
+        print(f'Result: FAILED.\nJSON:\n{prettify_json(response.json())}')
+    else:
+        print(
+            f'Some unexpected error has occurred. '
+            f'Returned response code: {response.status_code}'
+        )
+    input('Press any key to continue...\n')
+
+
+def test_get_user_by_name(base_url, name, expected_success_code=200, expected_fail_code=404):
+    """An unit test to ensure that the endpoint to get an user by name
+    is working properly.
+    """
+    ENDPOINT = f'users/{name}'
+    response = requests.get(f'{base_url}{ENDPOINT}')
+
+    if response.status_code == expected_success_code:
+        print(f'Result: SUCCESS.\nJSON:\n{prettify_json(response.json())}')
+    elif response.status_code == expected_fail_code:
+        print(f'Result: FAILED.\nJSON:\n{prettify_json(response.json())}')
+    else:
+        print(
+            f'Some unexpected error has occurred. '
+            f'Returned response code: {response.status_code}'
+        )
+    input('Press any key to continue...\n')
 
 
 def clean_database():
@@ -125,14 +164,28 @@ def clean_database():
     db.session.commit()
     print('Successfully deleted all the data in the database.', end='\n\n')
 
+
+if __name__ == '__main__':
+    # Creating the tables in the database based on the Models
+    db.create_all()
+    print('Tables are successfully created in the database.', end='\n\n')
+    input('Press any key to continue...\n')
+
+    # Pre-populate data into the database
+    load_database()
+
+    # Run unit tests
+    # --------------
+    test_get_all_users(LOCAL_DEV_SERVER)
+    # Test for success
+    test_get_user_by_name(LOCAL_DEV_SERVER, 'User 2')
+    # Test for failure
+    test_get_user_by_name(LOCAL_DEV_SERVER, 'Unknown', expected_success_code=404, expected_fail_code=200)
+    # --------------
+    
+    # Deleting all existing in the database
+    clean_database()
+
     # Drop all the tables in the database
     db.drop_all()
     print('All the tables have been dropped from the database.')
-
-
-if __name__ == '__main__':
-    # Pre-pop1ulate data into the database
-    load_database()
-
-    # Deleting all existing in the database
-    clean_database()
