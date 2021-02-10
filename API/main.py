@@ -161,7 +161,7 @@ class UserEntity(Resource):
         results = db.session.query(UserModel).all()
 
         if not results:
-            abort(404, error_code=404, error_msg='No member exist in the database')
+            abort(404, error_code=404, error_msg='No user exists in the database')
 
         users = {}
         for record in results:
@@ -260,7 +260,19 @@ class RoomEntity(Resource):
         Abort handling GET requests and return 404 if no rooms exist
         in the database along with an error message.
         """
-        pass
+        results = db.session.query(RoomModel).all()
+
+        if not results:
+            abort(404, error_code=404, error_msg='No room exists in the database')
+
+        rooms = {}
+        for record in results:
+            rooms[record._id] = {
+                'name': record.name, 
+                'room_admin': record.user.name
+            }
+
+        return [rooms], 200
 
     @marshal_with(room_fields)
     def post():
@@ -276,7 +288,24 @@ class RoomEntity(Resource):
         Aborts the request if a room with the passed name already exists
         and thus, return a 409 error code with an error message.
         """
-        pass
+        new_room_args = room_post_reqparser.parse_args(strict=True)
+
+        name_record = db.session.query(RoomModel).filter_by(name=new_room_args['name']).first()
+        if name_record:
+            abort(409, error_code=409,
+                error_msg='Cannot create a new room because a room with the given name already exists.'
+            )
+        room_admin = db.session.query(UserModel).filter_by(name=new_room_args['room_admin_name']).first()
+        if not room_admin:
+            abort(409, error_code=409,
+                error_msg='Cannot create a new room because no user with the given name of the room admin exists.'
+            )
+
+        new_room = RoomModel(name=new_room_args['name'], admin_id=room_admin)
+        db.session.add(new_room)
+        db.session.commit()
+        
+        return new_room, 201
 
 
 class RoomRecord(Resource):
