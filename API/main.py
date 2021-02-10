@@ -150,7 +150,7 @@ class UserEntity(Resource):
         2. POST - Create a new user.
     """
 
-    def get():
+    def get(self):
         """Handles GET requests for the resource and return HTTP code 200
         on a successful completion of a request.
 
@@ -175,7 +175,7 @@ class UserEntity(Resource):
         return [users], 200
 
     @marshal_with(user_fields)
-    def post():
+    def post(self):
         """Handles POST requests at the specified endpoint and returns status
         code 201 representing that a new user has been inserted into the
         database along with a JSON response containing information about
@@ -217,7 +217,7 @@ class UserRecord(Resource):
     """
 
     @marshal_with(user_fields)
-    def get(name):
+    def get(self, name):
         """Handles GET requests at the specified endpoint and return
         HTTP code 200 on a successful completion of a request.
         
@@ -252,7 +252,7 @@ class RoomEntity(Resource):
         2. POST - Create a new room.
     """
 
-    def get():
+    def get(self):
         """Handles GET requests at the endpoint and return HTTP code 200
         on a successful completion of a request.
 
@@ -277,7 +277,7 @@ class RoomEntity(Resource):
         return [rooms], 200
 
     @marshal_with(room_fields)
-    def post():
+    def post(self):
         """Handles POST requests at the specified endpoint and returns status
         code 201 representing that a new room has been inserted into the
         database along with a JSON response containing information about
@@ -320,7 +320,7 @@ class RoomRecord(Resource):
     """
 
     @marshal_with(room_fields)
-    def get(name):
+    def get(self, name):
         """Handles GET requests at the specified endpoint and return
         HTTP code 200 on a successful completion of a request.
         
@@ -355,7 +355,7 @@ class Message(Resource):
         2. POST - Create a new message.
     """
 
-    def get(room_name):
+    def get(self, room_name):
         """Handles GET requests at the endpoint and return HTTP code 200
         on a successful completion of a request.
 
@@ -395,7 +395,7 @@ class Message(Resource):
         return [messages], 200
 
     @marshal_with(message_fields)
-    def post():
+    def post(self):
         """Handles POST requests at the specified endpoint and returns status
         code 201 representing that a new message has been inserted into the
         database along with a JSON response containing information about
