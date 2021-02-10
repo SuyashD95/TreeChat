@@ -1,5 +1,5 @@
 from flask import Flask
-from flask_restful import Api, Resource
+from flask_restful import Api, Resource, reqparse
 from flask_sqlalchemy import SQLAlchemy
 
 # App Configuration
@@ -64,6 +64,42 @@ class MessageModel(db.Model):
         """Object representation for a record of a Message."""
         return f'Message(body={self.text}, timestamp={self.timestamp}, sender={self.user.name}, room={self.room.name}'
 # ---------------------
+
+
+# Request Parsers
+# ---------------
+# Add the request parser to verify that the user has passed in the
+# necessary fields in the JSON object to successfully create a new user.
+user_post_reqparser = reqparse.RequestParser()
+user_post_reqparser.add_argument('name', type=str, help='Username is a mandatory field.', required=True)
+user_post_reqparser.add_argument('password', type=str, help='Password is a mandatory field.', required=True)
+user_post_reqparser.add_argument('email', type=str, help='Email is an optional field.')
+
+# Add the request parser to verify that the user has passed in the
+# necessary fields in the JSON object to successfully create a new room.
+room_post_reqparser = reqparse.RequestParser()
+room_post_reqparser.add_argument('name', type=str, 
+    help='Required. Name of the Room.', required=True
+)
+room_post_reqparser.add_argument('room_admin_name', type=str,
+    help='Required. Name of the user who is the admin of the room.', required=True
+)
+
+# Add the request parser to verify that the user has passed in the
+# necessary fields in the JSON object to successfully create a new message.
+message_post_reqparser = reqparse.RequestParser()
+message_post_reqparser.add_argument('body', type=str, 
+    help='Required. Body of the message. Cannot be empty.', required=True
+)
+message_post_reqparser.add_argument('timestamp', type=str,
+    help='Required. Timestamp for the message expressed as a string.', required=True
+)
+message_post_reqparser.add_argument('sender_name', type=str, 
+    help='Required. Name of the sender.', required=True
+)
+message_post_reqparser.add('room_name', type=str, 
+    help='Required. Name of the room.', required=True
+)
 
 
 # API Resources
