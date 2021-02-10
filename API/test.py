@@ -99,6 +99,26 @@ def load_database():
     input('Press any key to continue...\n')
 
 
+def test_get_all_users(base_url, expected_success_code=200, expected_fail_code=404):
+    """An unit test to ensure that the endpoint to get all the existing
+    users is working properly.
+    """
+    ENDPOINT = 'users/all'
+    response = requests.get(f'{base_url}{ENDPOINT}')
+
+    if response.status_code == expected_success_code:
+        print(f'Result: SUCCESS.\nJSON:\n{prettify_json(response.json())}')
+    elif response.status_code == expected_fail_code:
+        print(f'Result: FAILED.\nJSON:\n{prettify_json(response.json())}')
+    else:
+        print(
+            f'Some unexpected error has occurred. '
+            f'Returned response code: {response.status_code}'
+        )
+    input('Press any key to continue...\n')
+
+
+            f'Some unexpected error has occurred. '
 def clean_database():
     """A helper method to delete all existing data stored in the local
     database.
