@@ -23,8 +23,8 @@ class UserModel(db.Model):
     name = db.Column(db.String(128), unique=True, nullable=False)
     password = db.Column(db.String(64), nullable=False)
     email = db.Column(db.String(256), nullable=True)
-    is_admin = db.relationship('Room', backref='user', lazy=True)
-    sends = db.relationship('Message', backref='user', lazy=True)
+    is_admin = db.relationship('RoomModel', backref='user', lazy=True)
+    sends = db.relationship('MessageModel', backref='user', lazy=True)
 
     def __repr__(self):
         """Object representation for a record of User."""
@@ -40,7 +40,7 @@ class RoomModel(db.Model):
         db.ForeignKey('user._id', onupdate='CASCADE', ondelete='CASCADE'),
         nullable=False
     )
-    messages = db.relationship('Message', backref='room', lazy=True)
+    messages = db.relationship('MessageModel', backref='room', lazy=True)
 
     def __repr__(self):
         """Object representation for a record of a Room."""
