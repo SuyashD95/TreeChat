@@ -15,10 +15,6 @@ def load_database():
     """Helper method used for pre-populating the test SQLite database
     with some initial data.
     """
-    # Creating the tables in the database based on the Models
-    db.create_all()
-    print('Tables are successfully created in the database.', end='\n\n')
-
     users_data = [
         {
             'name': 'User 1',
@@ -43,7 +39,7 @@ def load_database():
         db.session.add(new_user)
         db.session.commit()
         print(f'Added {new_user.name} into the database.')
-    print('Successfully inserted new records into the user table.')
+    print('Successfully inserted new records into the user table.', end='\n\n')
 
     room_admin = db.session.query(User).filter_by(name='User 1').first()
     
@@ -58,7 +54,7 @@ def load_database():
         room_admin.is_admin.append(new_room)
         db.session.commit()
         print(f'Added {new_room.name} into the database w/ {new_room.user.name} as its admin.')
-    print('Successfully inserted new records into the room table.')
+    print('Successfully inserted new records into the room table.', end='\n\n')
 
     sender_2 = db.session.query(User).filter_by(name='User 2').first()
     sender_3 = db.session.query(User).filter_by(name='User 3').first()
@@ -99,7 +95,8 @@ def load_database():
         message['sender'].sends.append(new_message)
         db.session.commit()
         print(f'Added new message, "{new_message.body}", sent by {new_message.user.name} on {new_message.room.name}')
-    print('Successfully inserted new records into the message table.')
+    print('Successfully inserted new records into the message table.', end='\n')
+    input('Press any key to continue...\n')
 
 
 def clean_database():
@@ -129,14 +126,19 @@ def clean_database():
     db.session.commit()
     print('Successfully deleted all the data in the database.', end='\n\n')
 
-    # Drop all the tables in the database
-    db.drop_all()
-    print('All the tables have been dropped from the database.')
-
 
 if __name__ == '__main__':
-    # Pre-pop1ulate data into the database
+    # Creating the tables in the database based on the Models
+    db.create_all()
+    print('Tables are successfully created in the database.', end='\n\n')
+    input('Press any key to continue...\n')
+
+    # Pre-populate data into the database
     load_database()
 
     # Deleting all existing in the database
     clean_database()
+
+    # Drop all the tables in the database
+    db.drop_all()
+    print('All the tables have been dropped from the database.')
