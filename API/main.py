@@ -1,5 +1,5 @@
 from flask import Flask
-from flask_restful import Api, Resource, reqparse, fields
+from flask_restful import Api, Resource, reqparse, fields, marshal_with
 from flask_sqlalchemy import SQLAlchemy
 
 # App Configuration
@@ -158,6 +158,7 @@ class UserEntity(Resource):
         """
         pass
 
+    @marshal_with(user_fields)
     def post():
         """Handles POST requests at the specified endpoint and returns status
         code 201 representing that a new user has been inserted into the
@@ -183,6 +184,7 @@ class UserRecord(Resource):
         1. GET - Get a user by their name.
     """
 
+    @marshal_with(user_fields)
     def get(name):
         """Handles GET requests at the specified endpoint and return
         HTTP code 200 on a successful completion of a request.
@@ -223,6 +225,7 @@ class RoomEntity(Resource):
         """
         pass
 
+    @marshal_with(room_fields)
     def post():
         """Handles POST requests at the specified endpoint and returns status
         code 201 representing that a new room has been inserted into the
@@ -248,6 +251,7 @@ class RoomRecord(Resource):
         1. GET - Get a room by their name.
     """
 
+    @marshal_with(room_fields)
     def get(name):
         """Handles GET requests at the specified endpoint and return
         HTTP code 200 on a successful completion of a request.
@@ -276,6 +280,7 @@ class Message(Resource):
         2. POST - Create a new message.
     """
 
+    @marshal_with(message_fields)
     def get(room_name):
         """Handles GET requests at the endpoint and return HTTP code 200
         on a successful completion of a request.
@@ -296,6 +301,7 @@ class Message(Resource):
         """
         pass
 
+    @marshal_with(message_fields)
     def post():
         """Handles POST requests at the specified endpoint and returns status
         code 201 representing that a new message has been inserted into the
