@@ -1,10 +1,14 @@
 from datetime import datetime
+from json import dumps as json_dumps
 
 import requests
 
 from main import db, UserModel as User, RoomModel as Room, MessageModel as Message
 
 LOCAL_DEV_SERVER = 'http://127.0.0.1:5000/'
+
+# A lambda function to format JSON responses in more human-readable manner
+prettify_json = lambda json_response, indent=2: json_dumps(json_response, indent=indent)
 
 
 def load_database():
