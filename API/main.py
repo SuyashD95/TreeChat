@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import Flask
 from flask_restful import Api, Resource, reqparse, fields, marshal_with, abort
 from flask_sqlalchemy import SQLAlchemy
@@ -120,7 +122,7 @@ user_fields = {
 room_fields = {
     '_id': fields.Integer,
     'name': fields.String,
-    'room_admin': fields.Integer
+    'admin_id': fields.Integer
 }
 
 # Specify the format that will be used to convert a MessageModel object
@@ -269,7 +271,7 @@ class RoomEntity(Resource):
         for record in results:
             rooms[record._id] = {
                 'name': record.name, 
-                'room_admin': record.user.name
+                'room_admin_name': record.user.name
             }
 
         return [rooms], 200
@@ -353,7 +355,6 @@ class Message(Resource):
         2. POST - Create a new message.
     """
 
-    @marshal_with(message_fields)
     def get(room_name):
         """Handles GET requests at the endpoint and return HTTP code 200
         on a successful completion of a request.
@@ -372,7 +373,26 @@ class Message(Resource):
             1. The room specified by room_name parameter doesn't exist, or;\n
             2. No messages exist for a given room in the database.
         """
-        pass
+        room = db.session.query(RoomModel).filter_by(name=room_name).first()
+
+        if not room:
+            abort(404, error_code=404, error_msg='No room with the given name exists in the database.')
+
+        results = db.session.query(MessageModel).filter_by(room_id=room).all()
+        
+        if not results:
+            abort(404, error_code=404, error_msg='No messages exist in the given room.')
+
+        messages = {}
+        for record in results:
+            messages[record._id] = {
+                'body': record.body,
+                'timestamp': record.timestamp,
+                'sender_name': record.user.name,
+                'room_name': record.room.name
+            }
+
+        return [messages], 200
 
     @marshal_with(message_fields)
     def post():
@@ -388,7 +408,33 @@ class Message(Resource):
         Aborts the request if a message with no content i.e., empty body is sent
         to the server and thus, return a 409 error code with an error message.
         """
-        pass  
+        new_message_args = message_post_reqparser.parse_args(strict=True)
+
+        sender = db.session.query(UserModel).filter_by(name=new_message_args['sender_name']).first()
+        if sender:
+            abort(409, error_code=409,
+                error_msg='Cannot create a new message because the given sender doesn\'t exist in the database.'
+            )
+        
+        room = db.session.query(RoomModel).filter_by(name=new_message_args['room_name']).first()
+        if room:
+            abort(409, error_code=409,
+                error_msg='Cannot create a new message because the given room doesn\'t exist in the database.'
+            )
+
+        if not len(new_message_args['body']):
+            abort(409, error_code=409, 
+                error_msg='Cannot create a message with an empty body.'
+            )
+
+        new_message = RoomModel(body=new_message_args['body'], 
+            timestamp=datetime.strptime(new_message_args['timestamp']),
+            sender_id=sender, room_id=room
+        )
+        db.session.add(new_message)
+        db.session.commit()
+        
+        return new_message, 201  
 # -------------
 
 
