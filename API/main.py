@@ -1,5 +1,5 @@
 from flask import Flask
-from flask_restful import Api, Resource, reqparse
+from flask_restful import Api, Resource, reqparse, fields
 from flask_sqlalchemy import SQLAlchemy
 
 # App Configuration
@@ -100,6 +100,37 @@ message_post_reqparser.add_argument('sender_name', type=str,
 message_post_reqparser.add('room_name', type=str, 
     help='Required. Name of the room.', required=True
 )
+# ---------------
+
+# Field Resources
+# ---------------
+# Specify the format that will be used to convert a UserModel object
+# into JSON compatible types.
+user_fields = {
+    '_id': fields.Integer,
+    'name': fields.String,
+    'password': fields.String,
+    'email': fields.String
+}
+
+# Specify the format that will be used to convert a RoomModel object
+# into JSON compatible types.
+room_fields = {
+    '_id': fields.Integer,
+    'name': fields.String,
+    'room_admin': fields.Integer
+}
+
+# Specify the format that will be used to convert a MessageModel object
+# into JSON compatible types.
+message_fields = {
+    '_id': fields.Integer,
+    'body': fields.String,
+    'timestamp': fields.DateTime,
+    'sender_id': fields.Integer,
+    'room_id': fields.Integer
+}
+# ---------------
 
 
 # API Resources
