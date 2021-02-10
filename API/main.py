@@ -1,5 +1,5 @@
 from flask import Flask
-from flask_restful import Api, Resource, reqparse, fields, marshal_with
+from flask_restful import Api, Resource, reqparse, fields, marshal_with, abort
 from flask_sqlalchemy import SQLAlchemy
 
 # App Configuration
@@ -72,7 +72,9 @@ class MessageModel(db.Model):
 # necessary fields in the JSON object to successfully create a new user.
 user_post_reqparser = reqparse.RequestParser()
 user_post_reqparser.add_argument('name', type=str, help='Username is a mandatory field.', required=True)
-user_post_reqparser.add_argument('password', type=str, help='Password is a mandatory field.', required=True)
+user_post_reqparser.add_argument('password', type=str,
+    help='Password is a mandatory field. Cannot be empty', required=True
+)
 user_post_reqparser.add_argument('email', type=str, help='Email is an optional field.')
 
 # Add the request parser to verify that the user has passed in the
@@ -156,7 +158,19 @@ class UserEntity(Resource):
         Abort handling GET requests and return 404 if no users exist
         in the database along with an error message.
         """
-        pass
+        results = db.session.query(UserModel).all()
+
+        if not results:
+            abort(404, error_code=404, error_msg='No member exist in the database')
+
+        users = {}
+        for record in results:
+            users[record._id] = {
+                'name': record.name, 
+                'email': record.email
+            }
+
+        return [users], 200
 
     @marshal_with(user_fields)
     def post():
@@ -172,7 +186,23 @@ class UserEntity(Resource):
         Aborts the request if a member with the passed name already exists
         and thus, return a 409 error code with an error message.
         """
-        pass
+        new_user_args = user_post_reqparser.parse_args(strict=True)
+
+        name_record = db.session.query(UserModel).filter_by(name=new_user_args['name']).first()
+        if name_record:
+            abort(409, error_code=409,
+                error_msg='Cannot create a new user because an user with the given name already exists.'
+            )
+        if not len(new_user_args['password']):
+            abort(409, error_code=409, error_msg='Cannot create a new user because the password field cannot be empty.')
+
+        new_user = UserModel(name=new_user_args['name'], 
+            password=new_user_args['password'], email=new_user_args['email']
+        )
+        db.session.add(new_user)
+        db.session.commit()
+        
+        return new_user, 201
 
 
 class UserRecord(Resource):
