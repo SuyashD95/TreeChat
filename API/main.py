@@ -332,7 +332,14 @@ class RoomRecord(Resource):
         Abort handling GET requests and return 404 if no room with
         the specified name is found along with an error message.
         """
-        pass
+        record = db.session.query(RoomModel).filter_by(name=name).first()
+
+        if not record:
+            abort(404, error_code=404, 
+                error_msg='No room with the given name exists in the database.'
+            )
+
+        return record, 200
 
 
 class Message(Resource):
