@@ -136,6 +136,83 @@ def test_get_user_by_name(base_url, name, expected_success_code=200, expected_fa
         )
     input('Press any key to continue...\n')
 
+def test_create_user(base_url, names, expected_success_code=201, expected_fail_code=409):
+    """An unit test to ensure that the endpoint to create a new user by name
+    is working properly.
+    """
+    ENDPOINT = f'users/new'
+
+    valid_request_bodies = [
+        {
+            'name': names[0],
+            'password': 'pass@123',
+            'email': f'{names[0]}@email.com'
+        },
+        {
+        'name': names[1],
+        'password': 'pwd@abc'
+        }
+    ]
+
+    for body in valid_request_bodies:
+        response = requests.post(f'{base_url}{ENDPOINT}', data=body)
+        if response.status_code == expected_success_code:
+            print(f'Result: SUCCESS.\nJSON:\n{prettify_json(response.json())}')
+        elif response.status_code == expected_fail_code:
+            print(f'Result: FAILED.\nJSON:\n{prettify_json(response.json())}')
+        else:
+            print(
+                f'Some unexpected error has occurred. '
+                f'Returned response code: {response.status_code}'
+            )
+        print()
+    input('Press any key to continue...\n')
+
+    expected_success_code = 409
+    expected_fail_code = 201
+    
+    faulty_request_bodies = [
+        {
+            'name': 'User 1',
+            'password': 'pwd2020'
+        },
+        {
+            'name': 'Don\'t Care',
+            'password': ''
+        },
+        {
+            'nam5': 'Invalid Parameter'
+        },
+        {
+            'name': 'Valid Name Param',
+            'email': 'Valid Email Param'
+        },
+        {
+            'name': 'Valid',
+            'password': 'Valid',
+            'ema1L': 'Invalid'
+        }
+    ]
+
+    for body in faulty_request_bodies:
+        response = requests.post(f'{base_url}{ENDPOINT}', json=body)
+        if response.status_code == expected_success_code:
+            print(f'Result: SUCCESS.\nJSON:\n{prettify_json(response.json())}')
+        elif response.status_code == expected_fail_code:
+            print(f'Result: FAILED.\nJSON:\n{prettify_json(response.json())}')
+        else:
+            print(
+                f'Some unexpected error has occurred. '
+                f'Returned response code: {response.status_code}'
+            )
+            try:
+                print(f'JSON:\n{response.json()}')
+            except ValueError :
+                print('No additional data was returned.')
+        print()
+    input('Press any key to continue...\n')
+    
+
 
 def clean_database():
     """A helper method to delete all existing data stored in the local
@@ -181,6 +258,7 @@ if __name__ == '__main__':
     test_get_user_by_name(LOCAL_DEV_SERVER, 'User 2')
     # Test for failure
     test_get_user_by_name(LOCAL_DEV_SERVER, 'Unknown', expected_success_code=404, expected_fail_code=200)
+    test_create_user(LOCAL_DEV_SERVER, ['User 4', 'User 5'])
     # --------------
     
     # Deleting all existing in the database
