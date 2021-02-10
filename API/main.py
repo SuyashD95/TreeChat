@@ -229,7 +229,14 @@ class UserRecord(Resource):
         Abort handling GET requests and return 404 if no user with
         the specified name is found along with an error message.
         """
-        pass
+        record = db.session.query(UserModel).filter_by(name=name).first()
+
+        if not record:
+            abort(404, error_code=404, 
+                error_msg='No user with the given name exists in the database.'
+            )
+
+        return record, 200
 
 
 class RoomEntity(Resource):
