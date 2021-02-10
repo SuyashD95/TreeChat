@@ -120,7 +120,7 @@ user_fields = {
 room_fields = {
     '_id': fields.Integer,
     'name': fields.String,
-    'room_admin': fields.Integer
+    'admin_id': fields.Integer
 }
 
 # Specify the format that will be used to convert a MessageModel object
@@ -269,7 +269,7 @@ class RoomEntity(Resource):
         for record in results:
             rooms[record._id] = {
                 'name': record.name, 
-                'room_admin': record.user.name
+                'room_admin_name': record.user.name
             }
 
         return [rooms], 200
@@ -372,7 +372,26 @@ class Message(Resource):
             1. The room specified by room_name parameter doesn't exist, or;\n
             2. No messages exist for a given room in the database.
         """
-        pass
+        room = db.session.query(RoomModel).filter_by(name=room_name).first()
+
+        if not room:
+            abort(404, error_code=404, error_msg='No room with the given name exists in the database.')
+
+        results = db.session.query(MessageModel).filter_by(room_id=room).all()
+        
+        if not results:
+            abort(404, error_code=404, error_msg='No messages exist in the given room.')
+
+        messages = {}
+        for record in results:
+            messages[record._id] = {
+                'body': record.body,
+                'timestamp': record.timestamp,
+                'sender_name': record.user.name,
+                'room_name': record.room.name
+            }
+
+        return [messages], 200
 
     @marshal_with(message_fields)
     def post():
