@@ -19,6 +19,8 @@ db = SQLAlchemy(app)
 class UserModel(db.Model):
     """Model class defined for the User table."""
 
+    __tablename__ = 'users'
+
     _id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128), unique=True, nullable=False)
     password = db.Column(db.String(64), nullable=False)
@@ -34,10 +36,12 @@ class UserModel(db.Model):
 class RoomModel(db.Model):
     """Model class defined for the Room table."""
 
+    __tablename__ = 'rooms'
+
     _id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128), unique=True, nullable=False)
     admin_id = db.Column(db.Integer, 
-        db.ForeignKey('user._id', onupdate='CASCADE', ondelete='CASCADE'),
+        db.ForeignKey('users._id', onupdate='CASCADE', ondelete='CASCADE'),
         nullable=False
     )
     messages = db.relationship('MessageModel', backref='room', lazy=True)
@@ -50,15 +54,17 @@ class RoomModel(db.Model):
 class MessageModel(db.Model):
     """Model class defined for the Message table."""
 
+    __meetingrooms__ = 'messages'
+
     _id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.Text, nullable=False)
     timestamp = db.Column(db.DateTime, nullable=False)
     sender_id = db.Column(db.Integer,
-        db.ForeignKey('user._id', onupdate='CASCADE', ondelete='CASCADE'),
+        db.ForeignKey('users._id', onupdate='CASCADE', ondelete='CASCADE'),
         nullable=False    
     )
     room_id = db.Column(db.Integer,
-        db.ForeignKey('room._id', onupdate='CASCADE', ondelete='CASCADE'),
+        db.ForeignKey('rooms._id', onupdate='CASCADE', ondelete='CASCADE'),
         nullable=False
     )
 
