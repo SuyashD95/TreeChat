@@ -101,7 +101,7 @@ message_post_reqparser.add_argument('timestamp', type=str,
 message_post_reqparser.add_argument('sender_name', type=str, 
     help='Required. Name of the sender.', required=True
 )
-message_post_reqparser.add('room_name', type=str, 
+message_post_reqparser.add_argument('room_name', type=str, 
     help='Required. Name of the room.', required=True
 )
 # ---------------
