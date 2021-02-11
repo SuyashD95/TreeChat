@@ -66,25 +66,21 @@ def load_database():
     messages_data = [
         {
             'body': 'Text for message 1 sent by User 2 in Room 1.',
-            'timestamp': datetime.now(),
             'sender': sender_2,
             'room': room_1
         },
         {
             'body': 'Text for message 2 sent by User 1 in Room 1',
-            'timestamp': datetime.now(),
             'sender': room_admin,
             'room': room_1
         },
         {
             'body': 'Text for message 3 sent by User 3 in Room 2',
-            'timestamp': datetime.now(),
             'sender': sender_3,
             'room': room_2
         },
         {
             'body': 'Text for message 3 sent by User 2 in Room 2',
-            'timestamp': datetime.now(),
             'sender': sender_2,
             'room': room_2
         }
@@ -92,7 +88,7 @@ def load_database():
 
     print('Inserting mock data to the message table in the database...')
     for message in messages_data:
-        new_message = Message(body=message['body'], timestamp=message['timestamp'], room_id=message['room']._id)
+        new_message = Message(body=message['body'], room_id=message['room']._id)
         message['sender'].sends.append(new_message)
         db.session.commit()
         print(f'Added new message, "{new_message.body}", sent by {new_message.user.name} on {new_message.room.name}')
