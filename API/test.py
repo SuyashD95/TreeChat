@@ -455,8 +455,8 @@ if __name__ == '__main__':
         db.session.rollback()
         input('Press any key to continue...\n')
 
-    # Run unit tests
-    # --------------
+    # Run unit tests 1
+    # ----------------
     # Testing /users/all
     test_get_all_users(LOCAL_DEV_SERVER)
     # Testing /user/{name}
@@ -477,10 +477,18 @@ if __name__ == '__main__':
     test_get_all_msgs_of_a_room(LOCAL_DEV_SERVER, 'Room 3', expected_success_code=404, expected_fail_code=200)
     # Testing /messages/new
     test_create_message(LOCAL_DEV_SERVER, 'User 4', 'Room 3')
-    # --------------
+    # ----------------
     
     # Deleting all existing in the database
     clean_database()
+
+    # Run unit tests 2 (These tests required no data to be stored in the database)
+    # ----------------
+    # Testing /users/all
+    test_get_all_users(LOCAL_DEV_SERVER, expected_success_code=404, expected_fail_code=200)
+    # Testing /rooms/all
+    test_get_all_rooms(LOCAL_DEV_SERVER, expected_success_code=404, expected_fail_code=200)
+    # ----------------
 
     # Drop all the tables in the database
     db.drop_all()
