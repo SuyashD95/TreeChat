@@ -253,6 +253,73 @@ def test_get_room_by_name(base_url, name, expected_success_code=200, expected_fa
     input('Press any key to continue...\n')
 
 
+def test_create_room(base_url, room_name, expected_success_code=201, expected_fail_code=409):
+    """An unit test to ensure that the endpoint to create a new rooms by name
+    is working properly.
+    """
+    ENDPOINT = f'rooms/new'
+
+    valid_request_body = {
+        'name': room_name,
+        'room_admin_name': 'User 2'
+    }
+
+    response = requests.post(f'{base_url}{ENDPOINT}', json=valid_request_body)
+    if response.status_code == expected_success_code:
+        print(f'Result: SUCCESS.\nJSON:\n{prettify_json(response.json())}')
+    elif response.status_code == expected_fail_code:
+        print(f'Result: FAILED.\nJSON:\n{prettify_json(response.json())}')
+    else:
+        print(
+            f'Some unexpected error has occurred. '
+            f'Returned response code: {response.status_code}'
+        )
+    print()
+    input('Press any key to continue...\n')
+
+    expected_success_code = 409
+    expected_fail_code = 201
+    
+    faulty_request_bodies = [
+        {
+            'name': 'Room 1',
+            'room_admin_name': 'User 2'
+        },
+        {
+            'name': 'Room 5',
+            'room_admin_name': 'I don\'t exist'
+        },
+        {
+            'name': 'Valid Name of Room'
+        },
+        {
+            'room_admin_name': 'Valid Name of Admin'
+        },
+        {
+            'name': 'Valid Room 1',
+            'r00m_Admin_Name': 'User 3'
+        }
+    ]
+
+    for body in faulty_request_bodies:
+        response = requests.post(f'{base_url}{ENDPOINT}', json=body)
+        if response.status_code == expected_success_code:
+            print(f'Result: SUCCESS.\nJSON:\n{prettify_json(response.json())}')
+        elif response.status_code == expected_fail_code:
+            print(f'Result: FAILED.\nJSON:\n{prettify_json(response.json())}')
+        else:
+            print(
+                f'Some unexpected error has occurred. '
+                f'Returned response code: {response.status_code}'
+            )
+            try:
+                print(f'JSON:\n{response.json()}')
+            except ValueError :
+                print('No additional data was returned.')
+        print()
+    input('Press any key to continue...\n')
+
+
 def clean_database():
     """A helper method to delete all existing data stored in the local
     database.
