@@ -320,6 +320,25 @@ def test_create_room(base_url, room_name, expected_success_code=201, expected_fa
     input('Press any key to continue...\n')
 
 
+def test_get_all_msgs_of_a_room(base_url, room_name, expected_success_code=200, expected_fail_code=404):
+    """An unit test to ensure that the endpoint to get all messages by
+    the given room name is working properly.
+    """
+    ENDPOINT = f'messages/{room_name}'
+    response = requests.get(f'{base_url}{ENDPOINT}')
+
+    if response.status_code == expected_success_code:
+        print(f'Result: SUCCESS.\nJSON:\n{prettify_json(response.json())}')
+    elif response.status_code == expected_fail_code:
+        print(f'Result: FAILED.\nJSON:\n{prettify_json(response.json())}')
+    else:
+        print(
+            f'Some unexpected error has occurred. '
+            f'Returned response code: {response.status_code}'
+        )
+    input('Press any key to continue...\n')
+
+
 def clean_database():
     """A helper method to delete all existing data stored in the local
     database.
@@ -379,6 +398,10 @@ if __name__ == '__main__':
     test_get_room_by_name(LOCAL_DEV_SERVER, 'Unknown Room', expected_success_code=404, expected_fail_code=200)
     # Testing /rooms/new
     test_create_room(LOCAL_DEV_SERVER, 'Room 3')
+    # Testing /messages/{room_name}
+    test_get_all_msgs_of_a_room(LOCAL_DEV_SERVER, 'Room 1')
+    test_get_all_msgs_of_a_room(LOCAL_DEV_SERVER, 'Non-Existent Room', expected_success_code=404, expected_fail_code=200)
+    test_get_all_msgs_of_a_room(LOCAL_DEV_SERVER, 'Room 3', expected_success_code=404, expected_fail_code=200)
     # --------------
     
     # Deleting all existing in the database
