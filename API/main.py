@@ -63,7 +63,7 @@ class MessageModel(db.Model):
     body = db.Column(db.Text, nullable=False)
     sender_id = db.Column(db.Integer,
         db.ForeignKey('users._id', onupdate='CASCADE', ondelete='CASCADE'),
-        nullable=False    
+        nullable=False
     )
     room_id = db.Column(db.Integer,
         db.ForeignKey('rooms._id', onupdate='CASCADE', ondelete='CASCADE'),
@@ -415,13 +415,13 @@ class Message(Resource):
         new_message_args = message_post_reqparser.parse_args(strict=True)
 
         sender = db.session.query(UserModel).filter_by(name=new_message_args['sender_name']).first()
-        if sender:
+        if not sender:
             abort(409, error_code=409,
                 error_msg='Cannot create a new message because the given sender doesn\'t exist in the database.'
             )
         
         room = db.session.query(RoomModel).filter_by(name=new_message_args['room_name']).first()
-        if room:
+        if not room:
             abort(409, error_code=409,
                 error_msg='Cannot create a new message because the given room doesn\'t exist in the database.'
             )
@@ -431,10 +431,8 @@ class Message(Resource):
                 error_msg='Cannot create a message with an empty body.'
             )
 
-        new_message = RoomModel(body=new_message_args['body'], 
-            sender_id=sender, room_id=room
-        )
-        db.session.add(new_message)
+        new_message = MessageModel(body=new_message_args['body'], room_id=room._id)
+        sender.sends.append(new_message)
         db.session.commit()
         
         return new_message, 201  
