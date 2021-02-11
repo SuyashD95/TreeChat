@@ -1,5 +1,6 @@
 from datetime import datetime
 from json import dumps as json_dumps
+from sqlalchemy import exc
 
 import requests
 
@@ -136,6 +137,7 @@ def test_get_user_by_name(base_url, name, expected_success_code=200, expected_fa
         )
     input('Press any key to continue...\n')
 
+
 def test_create_user(base_url, names, expected_success_code=201, expected_fail_code=409):
     """An unit test to ensure that the endpoint to create a new user by name
     is working properly.
@@ -212,6 +214,24 @@ def test_create_user(base_url, names, expected_success_code=201, expected_fail_c
         print()
     input('Press any key to continue...\n')
     
+
+def test_get_all_rooms(base_url, expected_success_code=200, expected_fail_code=404):
+    """An unit test to ensure that the endpoint to get all the existing
+    rooms is working properly.
+    """
+    ENDPOINT = 'rooms/all'
+    response = requests.get(f'{base_url}{ENDPOINT}')
+
+    if response.status_code == expected_success_code:
+        print(f'Result: SUCCESS.\nJSON:\n{prettify_json(response.json())}')
+    elif response.status_code == expected_fail_code:
+        print(f'Result: FAILED.\nJSON:\n{prettify_json(response.json())}')
+    else:
+        print(
+            f'Some unexpected error has occurred. '
+            f'Returned response code: {response.status_code}'
+        )
+    input('Press any key to continue...\n')
 
 
 def clean_database():
