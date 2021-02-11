@@ -355,7 +355,13 @@ if __name__ == '__main__':
     input('Press any key to continue...\n')
 
     # Pre-populate data into the database
-    load_database()
+    try:
+        load_database()
+    except exc.SQLAlchemyError as sql_alchemy_err:
+        print(f'\nSQLAlchemy Error:\n{sql_alchemy_err}\n')
+        print(f'Rolling back all the transactions in the current session...')
+        db.session.rollback()
+        input('Press any key to continue...\n')
 
     # Run unit tests
     # --------------
