@@ -66,25 +66,21 @@ def load_database():
     messages_data = [
         {
             'body': 'Text for message 1 sent by User 2 in Room 1.',
-            'timestamp': datetime.now(),
             'sender': sender_2,
             'room': room_1
         },
         {
             'body': 'Text for message 2 sent by User 1 in Room 1',
-            'timestamp': datetime.now(),
             'sender': room_admin,
             'room': room_1
         },
         {
             'body': 'Text for message 3 sent by User 3 in Room 2',
-            'timestamp': datetime.now(),
             'sender': sender_3,
             'room': room_2
         },
         {
             'body': 'Text for message 3 sent by User 2 in Room 2',
-            'timestamp': datetime.now(),
             'sender': sender_2,
             'room': room_2
         }
@@ -92,7 +88,7 @@ def load_database():
 
     print('Inserting mock data to the message table in the database...')
     for message in messages_data:
-        new_message = Message(body=message['body'], timestamp=message['timestamp'], room_id=message['room']._id)
+        new_message = Message(body=message['body'], room_id=message['room']._id)
         message['sender'].sends.append(new_message)
         db.session.commit()
         print(f'Added new message, "{new_message.body}", sent by {new_message.user.name} on {new_message.room.name}')
@@ -320,6 +316,102 @@ def test_create_room(base_url, room_name, expected_success_code=201, expected_fa
     input('Press any key to continue...\n')
 
 
+def test_get_all_msgs_of_a_room(base_url, room_name, expected_success_code=200, expected_fail_code=404):
+    """An unit test to ensure that the endpoint to get all messages by
+    the given room name is working properly.
+    """
+    ENDPOINT = f'messages/{room_name}'
+    response = requests.get(f'{base_url}{ENDPOINT}')
+
+    if response.status_code == expected_success_code:
+        print(f'Result: SUCCESS.\nJSON:\n{prettify_json(response.json())}')
+    elif response.status_code == expected_fail_code:
+        print(f'Result: FAILED.\nJSON:\n{prettify_json(response.json())}')
+    else:
+        print(
+            f'Some unexpected error has occurred. '
+            f'Returned response code: {response.status_code}'
+        )
+    input('Press any key to continue...\n')
+
+
+def test_create_message(base_url, sender_name, room_name, expected_success_code=201, expected_fail_code=409):
+    """An unit test to ensure that the endpoint to create a new message
+    from a given sender for a specified room, is working properly.
+    """
+    ENDPOINT = f'messages/new'
+
+    valid_request_body = {
+        'body': f'This is a new message sent from {sender_name} to {room_name}',
+        'sender_name': sender_name,
+        'room_name': room_name
+    }
+
+    response = requests.post(f'{base_url}{ENDPOINT}', json=valid_request_body)
+    if response.status_code == expected_success_code:
+        print(f'Result: SUCCESS.\nJSON:\n{prettify_json(response.json())}')
+    elif response.status_code == expected_fail_code:
+        print(f'Result: FAILED.\nJSON:\n{prettify_json(response.json())}')
+    else:
+        print(
+            f'Some unexpected error has occurred. '
+            f'Returned response code: {response.status_code}'
+        )
+    print()
+    input('Press any key to continue...\n')
+
+    expected_success_code = 409
+    expected_fail_code = 201
+    
+    faulty_request_bodies = [
+        {
+            'body': 'This body does not matter.',
+            'sender_name': 'Unknown Sender',
+            'room_name': 'Room 1'
+        },
+        {
+            'body': 'This body does not matter.',
+            'sender_name': 'User 3',
+            'room_name': 'Unknown Room'
+        },
+        {
+            'body': '',
+            'sender_name': 'User 1',
+            'room_name': 'Room 1'
+        },
+        {
+            'sender_name': 'User 3',
+            'room_name': 'Unknown Room'
+        },
+        {
+            'body': 'This body does not matter.',
+            'room_name': 'Unknown Room'
+        },
+        {
+            'body': 'This body does not matter.',
+            'sender_name': 'User 1',
+        }
+    ]
+
+    for body in faulty_request_bodies:
+        response = requests.post(f'{base_url}{ENDPOINT}', json=body)
+        if response.status_code == expected_success_code:
+            print(f'Result: SUCCESS.\nJSON:\n{prettify_json(response.json())}')
+        elif response.status_code == expected_fail_code:
+            print(f'Result: FAILED.\nJSON:\n{prettify_json(response.json())}')
+        else:
+            print(
+                f'Some unexpected error has occurred. '
+                f'Returned response code: {response.status_code}'
+            )
+            try:
+                print(f'JSON:\n{response.json()}')
+            except ValueError :
+                print('No additional data was returned.')
+        print()
+    input('Press any key to continue...\n')
+
+
 def clean_database():
     """A helper method to delete all existing data stored in the local
     database.
@@ -363,8 +455,8 @@ if __name__ == '__main__':
         db.session.rollback()
         input('Press any key to continue...\n')
 
-    # Run unit tests
-    # --------------
+    # Run unit tests 1
+    # ----------------
     # Testing /users/all
     test_get_all_users(LOCAL_DEV_SERVER)
     # Testing /user/{name}
@@ -379,10 +471,24 @@ if __name__ == '__main__':
     test_get_room_by_name(LOCAL_DEV_SERVER, 'Unknown Room', expected_success_code=404, expected_fail_code=200)
     # Testing /rooms/new
     test_create_room(LOCAL_DEV_SERVER, 'Room 3')
-    # --------------
+    # Testing /messages/{room_name}
+    test_get_all_msgs_of_a_room(LOCAL_DEV_SERVER, 'Room 1')
+    test_get_all_msgs_of_a_room(LOCAL_DEV_SERVER, 'Non-Existent Room', expected_success_code=404, expected_fail_code=200)
+    test_get_all_msgs_of_a_room(LOCAL_DEV_SERVER, 'Room 3', expected_success_code=404, expected_fail_code=200)
+    # Testing /messages/new
+    test_create_message(LOCAL_DEV_SERVER, 'User 4', 'Room 3')
+    # ----------------
     
     # Deleting all existing in the database
     clean_database()
+
+    # Run unit tests 2 (These tests required no data to be stored in the database)
+    # ----------------
+    # Testing /users/all
+    test_get_all_users(LOCAL_DEV_SERVER, expected_success_code=404, expected_fail_code=200)
+    # Testing /rooms/all
+    test_get_all_rooms(LOCAL_DEV_SERVER, expected_success_code=404, expected_fail_code=200)
+    # ----------------
 
     # Drop all the tables in the database
     db.drop_all()

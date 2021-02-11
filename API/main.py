@@ -19,6 +19,7 @@ db = SQLAlchemy(app)
 class UserModel(db.Model):
     """Model class defined for the User table."""
 
+    # Name of the table created in the database
     __tablename__ = 'users'
 
     _id = db.Column(db.Integer, primary_key=True)
@@ -36,6 +37,7 @@ class UserModel(db.Model):
 class RoomModel(db.Model):
     """Model class defined for the Room table."""
 
+    # Name of the table created in the database
     __tablename__ = 'rooms'
 
     _id = db.Column(db.Integer, primary_key=True)
@@ -54,14 +56,14 @@ class RoomModel(db.Model):
 class MessageModel(db.Model):
     """Model class defined for the Message table."""
 
-    __meetingrooms__ = 'messages'
+    # Name of the table created in the database
+    __tablename__ = 'messages'
 
     _id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(db.DateTime, nullable=False)
     sender_id = db.Column(db.Integer,
         db.ForeignKey('users._id', onupdate='CASCADE', ondelete='CASCADE'),
-        nullable=False    
+        nullable=False
     )
     room_id = db.Column(db.Integer,
         db.ForeignKey('rooms._id', onupdate='CASCADE', ondelete='CASCADE'),
@@ -70,7 +72,7 @@ class MessageModel(db.Model):
 
     def __repr__(self):
         """Object representation for a record of a Message."""
-        return f'Message(body={self.text}, timestamp={self.timestamp}, sender={self.user.name}, room={self.room.name}'
+        return f'Message(body={self.body}, sender={self.user.name}, room={self.room.name}'
 # ---------------------
 
 
@@ -100,9 +102,6 @@ room_post_reqparser.add_argument('room_admin_name', type=str,
 message_post_reqparser = reqparse.RequestParser()
 message_post_reqparser.add_argument('body', type=str, 
     help='Required. Body of the message. Cannot be empty.', required=True
-)
-message_post_reqparser.add_argument('timestamp', type=str,
-    help='Required. Timestamp for the message expressed as a string.', required=True
 )
 message_post_reqparser.add_argument('sender_name', type=str, 
     help='Required. Name of the sender.', required=True
@@ -136,7 +135,6 @@ room_fields = {
 message_fields = {
     '_id': fields.Integer,
     'body': fields.String,
-    'timestamp': fields.DateTime,
     'sender_id': fields.Integer,
     'room_id': fields.Integer
 }
@@ -385,7 +383,7 @@ class Message(Resource):
         if not room:
             abort(404, error_code=404, error_msg='No room with the given name exists in the database.')
 
-        results = db.session.query(MessageModel).filter_by(room_id=room).all()
+        results = db.session.query(MessageModel).filter_by(room_id=room._id).all()
         
         if not results:
             abort(404, error_code=404, error_msg='No messages exist in the given room.')
@@ -394,7 +392,6 @@ class Message(Resource):
         for record in results:
             messages[record._id] = {
                 'body': record.body,
-                'timestamp': record.timestamp,
                 'sender_name': record.user.name,
                 'room_name': record.room.name
             }
@@ -418,13 +415,13 @@ class Message(Resource):
         new_message_args = message_post_reqparser.parse_args(strict=True)
 
         sender = db.session.query(UserModel).filter_by(name=new_message_args['sender_name']).first()
-        if sender:
+        if not sender:
             abort(409, error_code=409,
                 error_msg='Cannot create a new message because the given sender doesn\'t exist in the database.'
             )
         
         room = db.session.query(RoomModel).filter_by(name=new_message_args['room_name']).first()
-        if room:
+        if not room:
             abort(409, error_code=409,
                 error_msg='Cannot create a new message because the given room doesn\'t exist in the database.'
             )
@@ -434,11 +431,8 @@ class Message(Resource):
                 error_msg='Cannot create a message with an empty body.'
             )
 
-        new_message = RoomModel(body=new_message_args['body'], 
-            timestamp=datetime.strptime(new_message_args['timestamp']),
-            sender_id=sender, room_id=room
-        )
-        db.session.add(new_message)
+        new_message = MessageModel(body=new_message_args['body'], room_id=room._id)
+        sender.sends.append(new_message)
         db.session.commit()
         
         return new_message, 201  
