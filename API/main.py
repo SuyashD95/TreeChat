@@ -309,7 +309,8 @@ class RoomEntity(Resource):
                 error_msg='Cannot create a new room because no user with the given name of the room admin exists.'
             )
 
-        new_room = RoomModel(name=new_room_args['name'], admin_id=room_admin)
+        new_room = RoomModel(name=new_room_args['name'])
+        room_admin.is_admin.append(new_room)
         db.session.add(new_room)
         db.session.commit()
         

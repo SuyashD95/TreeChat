@@ -1,5 +1,6 @@
 from datetime import datetime
 from json import dumps as json_dumps
+from sqlalchemy import exc
 
 import requests
 
@@ -137,6 +138,188 @@ def test_get_user_by_name(base_url, name, expected_success_code=200, expected_fa
     input('Press any key to continue...\n')
 
 
+def test_create_user(base_url, names, expected_success_code=201, expected_fail_code=409):
+    """An unit test to ensure that the endpoint to create a new user by name
+    is working properly.
+    """
+    ENDPOINT = f'users/new'
+
+    valid_request_bodies = [
+        {
+            'name': names[0],
+            'password': 'pass@123',
+            'email': f'{names[0]}@email.com'
+        },
+        {
+        'name': names[1],
+        'password': 'pwd@abc'
+        }
+    ]
+
+    for body in valid_request_bodies:
+        response = requests.post(f'{base_url}{ENDPOINT}', data=body)
+        if response.status_code == expected_success_code:
+            print(f'Result: SUCCESS.\nJSON:\n{prettify_json(response.json())}')
+        elif response.status_code == expected_fail_code:
+            print(f'Result: FAILED.\nJSON:\n{prettify_json(response.json())}')
+        else:
+            print(
+                f'Some unexpected error has occurred. '
+                f'Returned response code: {response.status_code}'
+            )
+        print()
+    input('Press any key to continue...\n')
+
+    expected_success_code = 409
+    expected_fail_code = 201
+    
+    faulty_request_bodies = [
+        {
+            'name': 'User 1',
+            'password': 'pwd2020'
+        },
+        {
+            'name': 'Don\'t Care',
+            'password': ''
+        },
+        {
+            'nam5': 'Invalid Parameter'
+        },
+        {
+            'name': 'Valid Name Param',
+            'email': 'Valid Email Param'
+        },
+        {
+            'name': 'Valid',
+            'password': 'Valid',
+            'ema1L': 'Invalid'
+        }
+    ]
+
+    for body in faulty_request_bodies:
+        response = requests.post(f'{base_url}{ENDPOINT}', json=body)
+        if response.status_code == expected_success_code:
+            print(f'Result: SUCCESS.\nJSON:\n{prettify_json(response.json())}')
+        elif response.status_code == expected_fail_code:
+            print(f'Result: FAILED.\nJSON:\n{prettify_json(response.json())}')
+        else:
+            print(
+                f'Some unexpected error has occurred. '
+                f'Returned response code: {response.status_code}'
+            )
+            try:
+                print(f'JSON:\n{response.json()}')
+            except ValueError :
+                print('No additional data was returned.')
+        print()
+    input('Press any key to continue...\n')
+    
+
+def test_get_all_rooms(base_url, expected_success_code=200, expected_fail_code=404):
+    """An unit test to ensure that the endpoint to get all the existing
+    rooms is working properly.
+    """
+    ENDPOINT = 'rooms/all'
+    response = requests.get(f'{base_url}{ENDPOINT}')
+
+    if response.status_code == expected_success_code:
+        print(f'Result: SUCCESS.\nJSON:\n{prettify_json(response.json())}')
+    elif response.status_code == expected_fail_code:
+        print(f'Result: FAILED.\nJSON:\n{prettify_json(response.json())}')
+    else:
+        print(
+            f'Some unexpected error has occurred. '
+            f'Returned response code: {response.status_code}'
+        )
+    input('Press any key to continue...\n')
+
+
+def test_get_room_by_name(base_url, name, expected_success_code=200, expected_fail_code=404):
+    """An unit test to ensure that the endpoint to get a room by name
+    is working properly.
+    """
+    ENDPOINT = f'rooms/{name}'
+    response = requests.get(f'{base_url}{ENDPOINT}')
+
+    if response.status_code == expected_success_code:
+        print(f'Result: SUCCESS.\nJSON:\n{prettify_json(response.json())}')
+    elif response.status_code == expected_fail_code:
+        print(f'Result: FAILED.\nJSON:\n{prettify_json(response.json())}')
+    else:
+        print(
+            f'Some unexpected error has occurred. '
+            f'Returned response code: {response.status_code}'
+        )
+    input('Press any key to continue...\n')
+
+
+def test_create_room(base_url, room_name, expected_success_code=201, expected_fail_code=409):
+    """An unit test to ensure that the endpoint to create a new rooms by name
+    is working properly.
+    """
+    ENDPOINT = f'rooms/new'
+
+    valid_request_body = {
+        'name': room_name,
+        'room_admin_name': 'User 2'
+    }
+
+    response = requests.post(f'{base_url}{ENDPOINT}', json=valid_request_body)
+    if response.status_code == expected_success_code:
+        print(f'Result: SUCCESS.\nJSON:\n{prettify_json(response.json())}')
+    elif response.status_code == expected_fail_code:
+        print(f'Result: FAILED.\nJSON:\n{prettify_json(response.json())}')
+    else:
+        print(
+            f'Some unexpected error has occurred. '
+            f'Returned response code: {response.status_code}'
+        )
+    print()
+    input('Press any key to continue...\n')
+
+    expected_success_code = 409
+    expected_fail_code = 201
+    
+    faulty_request_bodies = [
+        {
+            'name': 'Room 1',
+            'room_admin_name': 'User 2'
+        },
+        {
+            'name': 'Room 5',
+            'room_admin_name': 'I don\'t exist'
+        },
+        {
+            'name': 'Valid Name of Room'
+        },
+        {
+            'room_admin_name': 'Valid Name of Admin'
+        },
+        {
+            'name': 'Valid Room 1',
+            'r00m_Admin_Name': 'User 3'
+        }
+    ]
+
+    for body in faulty_request_bodies:
+        response = requests.post(f'{base_url}{ENDPOINT}', json=body)
+        if response.status_code == expected_success_code:
+            print(f'Result: SUCCESS.\nJSON:\n{prettify_json(response.json())}')
+        elif response.status_code == expected_fail_code:
+            print(f'Result: FAILED.\nJSON:\n{prettify_json(response.json())}')
+        else:
+            print(
+                f'Some unexpected error has occurred. '
+                f'Returned response code: {response.status_code}'
+            )
+            try:
+                print(f'JSON:\n{response.json()}')
+            except ValueError :
+                print('No additional data was returned.')
+        print()
+    input('Press any key to continue...\n')
+
+
 def clean_database():
     """A helper method to delete all existing data stored in the local
     database.
@@ -172,15 +355,30 @@ if __name__ == '__main__':
     input('Press any key to continue...\n')
 
     # Pre-populate data into the database
-    load_database()
+    try:
+        load_database()
+    except exc.SQLAlchemyError as sql_alchemy_err:
+        print(f'\nSQLAlchemy Error:\n{sql_alchemy_err}\n')
+        print(f'Rolling back all the transactions in the current session...')
+        db.session.rollback()
+        input('Press any key to continue...\n')
 
     # Run unit tests
     # --------------
+    # Testing /users/all
     test_get_all_users(LOCAL_DEV_SERVER)
-    # Test for success
+    # Testing /user/{name}
     test_get_user_by_name(LOCAL_DEV_SERVER, 'User 2')
-    # Test for failure
-    test_get_user_by_name(LOCAL_DEV_SERVER, 'Unknown', expected_success_code=404, expected_fail_code=200)
+    test_get_user_by_name(LOCAL_DEV_SERVER, 'Unknown User', expected_success_code=404, expected_fail_code=200)
+    # Testing /users/new
+    test_create_user(LOCAL_DEV_SERVER, ['User 4', 'User 5'])
+    # Testing /rooms/all
+    test_get_all_rooms(LOCAL_DEV_SERVER)
+    # Testing /rooms/{name}
+    test_get_room_by_name(LOCAL_DEV_SERVER, 'Room 2')
+    test_get_room_by_name(LOCAL_DEV_SERVER, 'Unknown Room', expected_success_code=404, expected_fail_code=200)
+    # Testing /rooms/new
+    test_create_room(LOCAL_DEV_SERVER, 'Room 3')
     # --------------
     
     # Deleting all existing in the database
