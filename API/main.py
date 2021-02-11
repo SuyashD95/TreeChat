@@ -1,15 +1,33 @@
-from datetime import datetime
+import os
 
 from flask import Flask
 from flask_restful import Api, Resource, reqparse, fields, marshal_with, abort
 from flask_sqlalchemy import SQLAlchemy
+from dotenv import load_dotenv
+
+# Load Environment Variables
+# --------------------------
+# Configure dotenv to read environment variables from .env file
+load_dotenv(verbose=True)
+
+# Google Cloud SQL Instance
+DB_USER = os.getenv('DB_USER')
+DB_USER_PWD = os.getenv('DB_USER_PWD')
+DB_PUBLIC_IP_ADDRESS = os.getenv('DB_PUBLIC_IP_ADDRESS')
+CONNECTION_NAME = os.getenv('CONNECTION_NAME')
+DATABASE_NAME = os.getenv('DATABASE_NAME')
+# --------------------------
 
 # App Configuration
 # -----------------
 app = Flask(__name__)
 api = Api(app)
+
 # Local SQLite3 Database Configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test_database.db'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test_database.db'
+# Remote MySQL(v8.0) SQL Instance Configuration
+app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+mysqlconnector://{DB_USER}:{DB_USER_PWD}@{DB_PUBLIC_IP_ADDRESS}/{DATABASE_NAME}?unix_socket=/cloudsql/{CONNECTION_NAME}'
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 # -----------------
