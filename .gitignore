@@ -101,6 +101,9 @@ lint/tmp/
 # Code Editor-specific files/directories
 .vscode/
 
+# app.yaml file used by Google App Engine
+API/app.yaml
+
 # Database files
 *.db
 
