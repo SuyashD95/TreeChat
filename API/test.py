@@ -365,12 +365,20 @@ if __name__ == '__main__':
 
     # Run unit tests
     # --------------
+    # Testing /users/all
     test_get_all_users(LOCAL_DEV_SERVER)
-    # Test for success
+    # Testing /user/{name}
     test_get_user_by_name(LOCAL_DEV_SERVER, 'User 2')
-    # Test for failure
-    test_get_user_by_name(LOCAL_DEV_SERVER, 'Unknown', expected_success_code=404, expected_fail_code=200)
+    test_get_user_by_name(LOCAL_DEV_SERVER, 'Unknown User', expected_success_code=404, expected_fail_code=200)
+    # Testing /users/new
     test_create_user(LOCAL_DEV_SERVER, ['User 4', 'User 5'])
+    # Testing /rooms/all
+    test_get_all_rooms(LOCAL_DEV_SERVER)
+    # Testing /rooms/{name}
+    test_get_room_by_name(LOCAL_DEV_SERVER, 'Room 2')
+    test_get_room_by_name(LOCAL_DEV_SERVER, 'Unknown Room', expected_success_code=404, expected_fail_code=200)
+    # Testing /rooms/new
+    test_create_room(LOCAL_DEV_SERVER, 'Room 3')
     # --------------
     
     # Deleting all existing in the database
