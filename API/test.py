@@ -234,6 +234,25 @@ def test_get_all_rooms(base_url, expected_success_code=200, expected_fail_code=4
     input('Press any key to continue...\n')
 
 
+def test_get_room_by_name(base_url, name, expected_success_code=200, expected_fail_code=404):
+    """An unit test to ensure that the endpoint to get a room by name
+    is working properly.
+    """
+    ENDPOINT = f'rooms/{name}'
+    response = requests.get(f'{base_url}{ENDPOINT}')
+
+    if response.status_code == expected_success_code:
+        print(f'Result: SUCCESS.\nJSON:\n{prettify_json(response.json())}')
+    elif response.status_code == expected_fail_code:
+        print(f'Result: FAILED.\nJSON:\n{prettify_json(response.json())}')
+    else:
+        print(
+            f'Some unexpected error has occurred. '
+            f'Returned response code: {response.status_code}'
+        )
+    input('Press any key to continue...\n')
+
+
 def clean_database():
     """A helper method to delete all existing data stored in the local
     database.
